@@ -3,6 +3,8 @@ const { User, validate } = require("../models/user");
 const router = express.Router();
 const _ = require("lodash");
 
+const bcrypt = require("bcrypt");
+
 router.post("/", async (req, res) => {
   //todo: first validate the data users sent
   const { error } = validate(req.body);
@@ -27,7 +29,12 @@ router.post("/", async (req, res) => {
   //note: always prefer to pick only that part of the data sent from the user that you'r interested.
   // the reason is, if a malicious user decides to send too many data we'r not going to store all of that but just those we want to store.
   user = new User(_.pick(req.body, ["name", "email", "password"]));
+
+  // hash the user password and store it to the database
+  const salt = await bcrypt.genSalt();
+  user.password = await bcrypt.hash(user.password, salt)
   await user.save();
+
   // this part has a small but potentially risky problem and that is the user object is sent back as a whole
   // that would be nice to have a way to just send the parts we want not all of it.
   // lodash to the rescue!
