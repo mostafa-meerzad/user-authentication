@@ -1,6 +1,7 @@
 const express = require("express");
 const users = require("./routes/users");
 const mongoose = require("mongoose");
+const auth = require("./routes/auth");
 const app = express();
 
 // connect to mongodb
@@ -16,7 +17,7 @@ mongoose
 app.use(express.json()); // add "json" middleware to make it possible to get data from the user in the form of json
 
 app.use("/api/users", users);
-
+app.use("/api/auth", auth);
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
